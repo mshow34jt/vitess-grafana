@@ -1,7 +1,7 @@
 Overview
 ========
 
-This is a django project that provides SOS support for Grafana. It relies on sosdb-ui
+This is a django project that provides vitess support for Grafana. It relies on sosdb-ui
 SOS, and apache.
 
 Installation
