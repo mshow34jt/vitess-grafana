@@ -1,0 +1,5 @@
+#!/bin/bash
+make 
+make install
+chown -R apache:apache /var/www/ovis_web_svcs
+systemctl restart httpd
