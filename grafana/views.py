@@ -7,13 +7,13 @@ from django.shortcuts import render
 from django.http import HttpResponse, Http404, HttpResponseRedirect, QueryDict
 from graf_analysis import grafanaFormatter
 from sosgui import _log, settings
-from sosdb import Sos
+#from sosdb import Sos
 import traceback as tb
 import datetime as dt
 import _strptime
 import time
 import sys
-from . import models_sos
+#from . import models_sos
 from . import models_vitess
 import numpy as np
 import importlib
@@ -40,15 +40,16 @@ def get_container(cont_name):
     try:
         global log
         log = _log.MsgLog('GrafanaViews')
-        path = settings.SOS_ROOT + '/' + cont_name
-        cont = Sos.Container(path)
+ #       path = settings.SOS_ROOT + '/' + cont_name
+ #       cont = Sos.Container(path)
+
         return cont
     except:
         cont = None
         return cont
 
 def close_container(cont):
-    cont.close()
+#    cont.close()
     del cont
 
 def parse_referer_date(s):
@@ -141,11 +142,12 @@ def query(request):
             endMs = startMs + (intervalMs * maxDataPoints)
         target = req['targets'][0]
         cont_name = str(target['container'])
-        cont = get_container(cont_name)
-        if cont is None:
-            return HttpResponse("The container {0} could not be opened.".\
-                                format(cont_name),
-                                content_type="text/html")
+        cont=cont_name
+        #cont = get_container(cont_name)
+        #if cont is None:
+        #    return HttpResponse("The container {0} could not be opened.".\
+        #                        format(cont_name),
+        #                        content_type="text/html")
         schemaName = str(target['schema'])
         metricNames = parse_glob(target['target'])
         if 'scopedVars' in req:
@@ -213,8 +215,8 @@ def query(request):
             except Exception as e:
                 a, b, c = sys.exc_info()
                 log.write(str(e)+' '+str(c.tb_lineno))
-                if cont:
-                    close_container(cont)
+#                if cont:
+#                    close_container(cont)
                 return HttpResponse(json.dumps([ {"columns" : [{ "text" : str(e) }],
                                     "rows" : [[]], "type" : "table" } ]),
                                     content_type='application/json')
@@ -266,8 +268,8 @@ def query(request):
     except Exception as e:
         log.write(tb.format_exc())
         log.write(str(e))
-        if cont:
-            close_container(cont)
+#        if cont:
+#            close_container(cont)
         return HttpResponse(json.dumps([]), content_type='application/json')
 
 
@@ -305,44 +307,44 @@ def search(request):
         parms = QueryParameters(req['target'])
 
         cont_name = parms['container']
-        if cont_name is None:
-            raise ValueError("Error: The 'container' key is missing from the search")
+#        if cont_name is None:
+#            raise ValueError("Error: The 'container' key is missing from the search")
+#
+#        cont = get_container(cont_name)
+#        if cont is None:
+#            raise ValueError("Error: The container {0} could not be opened.".format(cont_name))
 
-        cont = get_container(cont_name)
-        if cont is None:
-            raise ValueError("Error: The container {0} could not be opened.".format(cont_name))
+#        model = models_sos.Search(cont)
+#        resp = {}
 
-        model = models_sos.Search(cont)
-        resp = {}
+#        schema = parms['schema']
+#        query = parms['query']
+#        if query.lower() != "schema" and schema is None:
+#            if schema is None:
+#                raise ValueError("Error: The 'schema' parameter is missing from the search.")
+#                return HttpResponse(json.dumps(["Error", "Schema is required"]), content_type='application/json')
 
-        schema = parms['schema']
-        query = parms['query']
-        if query.lower() != "schema" and schema is None:
-            if schema is None:
-                raise ValueError("Error: The 'schema' parameter is missing from the search.")
-                return HttpResponse(json.dumps(["Error", "Schema is required"]), content_type='application/json')
+#        if query.lower() == "schema":
+#            resp = model.getSchema(cont)
+#        elif query.lower() == "index":
+#            resp = model.getIndices(cont, schema)
+#        elif query.lower() == "metrics":
+#            resp = model.getMetrics(cont, schema)
+#        elif query.lower() == "components":
+#            resp = model.getComponents(cont, schema, start, end)
+#        elif query.lower() == "jobs":
+#            resp = model.getJobs(cont, schema, start, end)
 
-        if query.lower() == "schema":
-            resp = model.getSchema(cont)
-        elif query.lower() == "index":
-            resp = model.getIndices(cont, schema)
-        elif query.lower() == "metrics":
-            resp = model.getMetrics(cont, schema)
-        elif query.lower() == "components":
-            resp = model.getComponents(cont, schema, start, end)
-        elif query.lower() == "jobs":
-            resp = model.getJobs(cont, schema, start, end)
-
-        close_container(cont)
+#        close_container(cont)
         return HttpResponse(json.dumps(resp), content_type = 'application/json')
 
     except Exception as e:
         a,b,c = sys.exc_info()
         log.write("search: {0}".format(e)+' '+str(c.tb_lineno))
-        if not cont:
-            pass
-        else:
-            close_container(cont)
+#        if not cont:
+#            pass
+#        else:
+#            close_container(cont)
         return HttpResponse(json.dumps(["Exception Error:", str(e)]),
                             content_type='application/json')
 
@@ -365,9 +367,9 @@ def annotations(request):
         if note_type is None:
             raise ValueError("Missing type")
 
-        cont_name = parameters['container']
-        if cont_name is None:
-            raise ValueError("Missing container name")
+ #       cont_name = parameters['container']
+ #       if cont_name is None:
+ #           raise ValueError("Missing container name")
 
         jobId = parameters['job_id']
         compId = parameters['comp_id']
@@ -380,11 +382,11 @@ def annotations(request):
                 ptnId[x] = int(ptnId[x])
                 x += 1
         if note_type == 'JOB_MARKERS':
-            cont = get_container(cont_name)
-            if cont is None:
-                raise ValueError("Container '{0}' could not be opened.".format(cont_name))
-            model = models_sos.Annotations(cont=cont)
-            jobs = model.getJobMarkers(start, end, jobId=jobId, compId=compId)
+#            cont = get_container(cont_name)
+#            if cont is None:
+#                raise ValueError("Container '{0}' could not be opened.".format(cont_name))
+#            model = models_sos.Annotations(cont=cont)
+#            jobs = model.getJobMarkers(start, end, jobId=jobId, compId=compId)
             if jobs is None:
                 raise ValueError("No data returned for jobId {0} compId {1} start {2} end {3}".\
                                  format(jobId, compId, start, end))
@@ -415,18 +417,18 @@ def annotations(request):
                 annotes.append(entry)
         elif note_type == 'LOGS':
             cont = models_baler.GetBstore(cont_name)
-            if cont is None:
-                raise ValueError("Container '{0}' could not be opened.".format(cont_name))
+ #           if cont is None:
+#                raise ValueError("Container '{0}' could not be opened.".format(cont_name))
             start = int(start.strftime('%s'))
             end = int(end.strftime('%s'))
-            annotes = models_baler.MsgAnnotations(cont, start, end, int(compId), ptnId, annotation)
+ #           annotes = models_baler.MsgAnnotations(cont, start, end, int(compId), ptnId, annotation)
         else:
             raise ValueError("Unrecognized annotation type '{0}'.".format(note_type))
-        close_container(cont)
+#        close_container(cont)
         return HttpResponse(json.dumps(annotes), content_type='application/json')
 
     except Exception as e:
         log.write(tb.format_exc())
         log.write(str(e))
-        close_container(cont)
+#        close_container(cont)
         return HttpResponse(json.dumps(annotes), content_type='application/json')

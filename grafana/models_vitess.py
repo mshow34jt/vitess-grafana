@@ -2,14 +2,14 @@ from django.db import models
 import datetime as dt
 import time
 import os, sys, traceback
-from sosdb import Sos
+#from sosdb import Sos
 from sosgui import settings, _log
 from numsos.DataSource import SosDataSource
 from graf_analysis.grafanaAnalysis import papiAnalysis
 from . import views
 import mysql.connector
-from numsos.Transform import Transform
-from sosdb.DataSet import DataSet
+#from numsos.Transform import Transform
+#from sosdb.DataSet import DataSet
 import numpy as np
 import pandas as pd
 
@@ -76,84 +76,84 @@ class Search(object):
     def getSchema(self, cont):
         self.schemas = {}
         schemas = {}
-        for schema in self.cont.schema_iter():
-            name = schema.name()
-            schemas[name] = name
+#        for schema in self.cont.schema_iter():
+#            name = schema.name()
+#            schemas[name] = name
         return schemas
 
     def getIndices(self, cont, schema_name):
-        schema = cont.schema_by_name(schema_name)
+#        schema = cont.schema_by_name(schema_name)
         indices = {}
-        for attr in schema:
-            if attr.is_indexed() == True:
-                name = attr.name()
-                indices[name] = name
+#        for attr in schema:
+#            if attr.is_indexed() == True:
+#                name = attr.name()
+#                indices[name] = name
         return indices
 
     def getMetrics(self, cont, schema_name):
-        schema = cont.schema_by_name(schema_name)
+#        schema = cont.schema_by_name(schema_name)
         attrs = {}
-        for attr in schema:
-            if attr.type() != Sos.TYPE_JOIN:
-                name = attr.name()
-                attrs[name] = name
-        if schema_name == 'papi-events':
-            attrs.update(papi_derived_metrics)
+#        for attr in schema:
+#            if attr.type() != Sos.TYPE_JOIN:
+#                name = attr.name()
+#                attrs[name] = name
+#        if schema_name == 'papi-events':
+#            attrs.update(papi_derived_metrics)
         return attrs
 
     def getComponents(self, cont, schema_name, start, end):
-        schema = cont.schema_by_name(schema_name)
-        attr = schema.attr_by_name("component_id")
-        if attr is None:
+#        schema = cont.schema_by_name(schema_name)
+#        attr = schema.attr_by_name("component_id")
+#        if attr is None:
             return {0}
-        src = SosDataSource()
-        src.config(cont=cont)
-        where = []
-        if start > 0:
-            where.append([ 'timestamp', Sos.COND_GE, start ])
-        if end > 0:
-            where.append([ 'timestamp', Sos.COND_LE, end ])
-        src.select([ 'component_id' ],
-                   from_    = [ schema_name ],
-                   where    = where,
-                   order_by = 'timestamp'
-        )
-        comps = src.get_results()
-        if comps is None:
-            return {0}
-        comp_ids = np.unique(comps['component_id'])
-        result = {}
-        for comp_id in comp_ids:
-            result[str(int(comp_id))] = int(comp_id)
-        return result
+#        src = SosDataSource()
+#        src.config(cont=cont)
+#        where = []
+#        if start > 0:
+#            where.append([ 'timestamp', Sos.COND_GE, start ])
+#        if end > 0:
+#            where.append([ 'timestamp', Sos.COND_LE, end ])
+#        src.select([ 'component_id' ],
+#                   from_    = [ schema_name ],
+#                   where    = where,
+#                   order_by = 'timestamp'
+#        )
+#        comps = src.get_results()
+#        if comps is None:
+#            return {0}
+#        comp_ids = np.unique(comps['component_id'])
+#        result = {}
+#        for comp_id in comp_ids:
+#            result[str(int(comp_id))] = int(comp_id)
+#        return result
 
     def getJobs(self, cont, schema_name, start, end):
         # method to retrieve unique job_ids
-        schema = cont.schema_by_name(schema_name)
-        attr = schema.attr_by_name("job_id")
-        if attr is None:
+ #       schema = cont.schema_by_name(schema_name)
+ #       attr = schema.attr_by_name("job_id")
+ #       if attr is None:
             return None
-        src = SosDataSource()
-        src.config(cont=cont)
-        where_ = []
-        where_.append(['job_id', Sos.COND_GT, 1])
-        where_.append([ 'timestamp', Sos.COND_GT, start ])
-        if end > 0:
-            where_.append([ 'timestamp', Sos.COND_LE, end ])
-        src.select([ 'job_id' ],
-                   from_    = [ schema_name ],
-                   where    = where_,
-                   order_by = 'time_job_comp'
-        )
-        jobs = src.get_results(limit=8128)
-        if jobs is None:
-            return {0}
-        job_ids = np.unique(jobs['job_id'])
-        job_ids = jobs.array('job_id')
-        result = {}
-        for job_id in job_ids:
-            result[str(int(job_id))] = int(job_id)
-        return result
+#        src = SosDataSource()
+#        src.config(cont=cont)
+#        where_ = []
+#        where_.append(['job_id', Sos.COND_GT, 1])
+#        where_.append([ 'timestamp', Sos.COND_GT, start ])
+#        if end > 0:
+#            where_.append([ 'timestamp', Sos.COND_LE, end ])
+#        src.select([ 'job_id' ],
+#                   from_    = [ schema_name ],
+#                   where    = where_,
+#                   order_by = 'time_job_comp'
+#        )
+#        jobs = src.get_results(limit=8128)
+#        if jobs is None:
+#            return {0}
+#        job_ids = np.unique(jobs['job_id'])
+#        job_ids = jobs.array('job_id')
+#        result = {}
+#        for job_id in job_ids:
+#            result[str(int(job_id))] = int(job_id)
+#        return result
 
 class Query(object):
     def __init__(self, cont, schemaName, index='time_job_comp'):
@@ -351,19 +351,21 @@ class Query(object):
                 compIds = comps
         for comp_id in compIds:
             for metric in metricNames:
-                if comp_id != 0:
-                    where_ = [
-                        [ 'component_id', Sos.COND_EQ, comp_id ]
-                    ]
-                else:
-                    where_ = []
-                if jobId != 0:
-                    self.index = "job_comp_time"
-                    where_.append([ 'job_id', Sos.COND_EQ, int(jobId) ])
-                else:
-                    self.index = "time_comp"
-                    where_.append([ 'timestamp', Sos.COND_GE, start ])
-                    where_.append([ 'timestamp', Sos.COND_LE, end ])
+#                if comp_id != 0:
+                    #where_ = [
+                    #    [ 'component_id', Sos.COND_EQ, comp_id ]
+                    #]
+#                    where_ = []
+#                else:
+#                    where_ = []
+#                if jobId != 0:
+                    #self.index = "job_comp_time"
+                    #where_.append([ 'job_id', Sos.COND_EQ, int(jobId) ])
+                    
+#                else:
+#                    self.index = "time_comp"
+#                    where_.append([ 'timestamp', Sos.COND_GE, start ])
+#                    where_.append([ 'timestamp', Sos.COND_LE, end ])
 #           
 #     src.select([ metric, 'timestamp' ],
 #                           from_ = [ self.schemaName ],
