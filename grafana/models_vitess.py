@@ -288,8 +288,8 @@ class Query(object):
         mycursor = mydb.cursor()
         mycursor.execute("set workload='olap'")
 
-        log.write("initial compids "+str(compIds))
-        log.write("params "+str(params))
+#        log.write("initial compids "+str(compIds))
+#        log.write("params "+str(params))
         result = []
         comps = []
         if compIds:
@@ -388,12 +388,13 @@ class Query(object):
                 metricName=str(metric)
                 metricDivisor=1
                 metricUnits="none"
-                metric_table="ovis_metrics"
+                metric_table="meminfo"
 
                 query="select string,divisor,units,metric_table from metrics_md where `name`='"+str(metric)+"'"
                 mycursor.execute(query)
                 row=mycursor.fetchone()
                 if row is not None :
+                    log.write("Found the metric")
                     metricName=row[0]
                     metricDivisor=row[1]
                     metricUnits=row[2]
