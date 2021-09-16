@@ -321,7 +321,7 @@ class Query(object):
                 while row is not None:
                     row=mycursor.fetchone()
                     if row is not None:
-                        nidlist=nidlist + ',' + str(row[0]i+node_offset)
+                        nidlist=nidlist + ',' + str(row[0]+node_offset)
                         compIds.append(row[0]+node_offset)
 #            log.write("nidlist: " + nidlist)
             if str(params) :
