@@ -281,6 +281,8 @@ class Query(object):
         db_host=settings.DB_HOST
         db_port=settings.DB_PORT
         db_name=settings.DB_NAME
+        node_offset=settings.NODE_OFFSET
+        
         
         log.write("dbinfo: "+str(db_host))    
 
@@ -314,13 +316,13 @@ class Query(object):
             mycursor.execute(query)
             row=mycursor.fetchone()
             if row is not None :
-                nidlist=str(row[0])
-                compIds.append(row[0])
+                nidlist=str(row[0]+node_offset)
+                compIds.append(row[0]+node+offset)
                 while row is not None:
                     row=mycursor.fetchone()
                     if row is not None:
-                        nidlist=nidlist + ',' + str(row[0])
-                        compIds.append(row[0])
+                        nidlist=nidlist + ',' + str(row[0]i+node_offset)
+                        compIds.append(row[0]+node_offset)
 #            log.write("nidlist: " + nidlist)
             if str(params) :
                 compIds=[jobId] 
@@ -391,6 +393,7 @@ class Query(object):
                 metric_table="meminfo"
 
                 query="select string,divisor,units,metric_table from metrics_md where `name`='"+str(metric)+"'"
+                log.write("query"+query)
                 mycursor.execute(query)
                 row=mycursor.fetchone()
                 if row is not None :
@@ -401,9 +404,11 @@ class Query(object):
                     metric_table=row[3]
 #		If no aggregation
                 if not str(params) :
-                    query= "select "+str(metric)+",((Ctime DIV 60)*60) as minutex from "+str(metric_table)+" where CompId in (" + str(comp_id) + ") and cTime>"+str(start)+" and cTime<"+str(end) + " group by minutex"
+#                    query= "select "+str(metric)+",((Ctime DIV 60)*60) as minutex from "+str(metric_table)+" where CompId in (" + str(comp_id) + ") and cTime>"+str(start)+" and cTime<"+str(end) + " group by minutex"
+                    query= "select "+str(metric)+",Ctime from "+str(metric_table)+" where CompId in (" + str(comp_id) + ") and cTime>"+str(start)+" and cTime<"+str(end) + " group by cTime"
                 else:
-                    query= "select "+str(params)+"("+str(metric)+"),((Ctime DIV 60)*60) as minutex from "+str(metric_table)+" where CompId in (" + nidlist + ") and cTime>"+str(jobStart)+" and cTime<"+str(jobEnd) + " group by minutex"
+                    query= "select "+str(params)+"("+str(metric)+"),Ctime from "+str(metric_table)+" where CompId in (" + nidlist + ") and cTime>"+str(jobStart)+" and cTime<"+str(jobEnd) + " group by cTime"
+#                    query= "select "+str(params)+"("+str(metric)+"),((Ctime DIV 60)*60) as minutex from "+str(metric_table)+" where CompId in (" + nidlist + ") and cTime>"+str(jobStart)+" and cTime<"+str(jobEnd) + " group by minutex"
                 #query= "select loadavg_latest,cTime from ovis_metrics where CompId=1234  and cTime>"+str(start)+" and cTime<"+str(end)
                 #query= "select loadavg_latest,cTime from ovis_metrics where Compid in ("+str(comp_id)+") and cTime>"+str(start)+" and cTime<"+str(end)
                 log.write(query)
