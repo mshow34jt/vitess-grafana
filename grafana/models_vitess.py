@@ -277,6 +277,12 @@ class Query(object):
         """Return time series data for a particular component/s"""
         src = SosDataSource()
         src.config(cont=self.cont)
+        
+        db_host=settings.DB_HOST
+        db_port=settings.DB_PORT
+        db_name=settings.DB_NAME
+        
+        log.write("dbinfo: "+str(db_host))    
 
         mydb = mysql.connector.connect(host="127.0.0.1",port=15306,database='ISC')
         mycursor = mydb.cursor()
@@ -394,9 +400,9 @@ class Query(object):
                     metric_table=row[3]
 #		If no aggregation
                 if not str(params) :
-                    query= "select "+str(metric)+",((Ctime DIV 60)*60) as minutex from ovis_metrics where CompId in (" + str(comp_id) + ") and cTime>"+str(start)+" and cTime<"+str(end) + " group by minutex"
+                    query= "select "+str(metric)+",((Ctime DIV 60)*60) as minutex from "+str(metric_table)+" where CompId in (" + str(comp_id) + ") and cTime>"+str(start)+" and cTime<"+str(end) + " group by minutex"
                 else:
-                    query= "select "+str(params)+"("+str(metric)+"),((Ctime DIV 60)*60) as minutex from ovis_metrics where CompId in (" + nidlist + ") and cTime>"+str(jobStart)+" and cTime<"+str(jobEnd) + " group by minutex"
+                    query= "select "+str(params)+"("+str(metric)+"),((Ctime DIV 60)*60) as minutex from "+str(metric_table)+" where CompId in (" + nidlist + ") and cTime>"+str(jobStart)+" and cTime<"+str(jobEnd) + " group by minutex"
                 #query= "select loadavg_latest,cTime from ovis_metrics where CompId=1234  and cTime>"+str(start)+" and cTime<"+str(end)
                 #query= "select loadavg_latest,cTime from ovis_metrics where Compid in ("+str(comp_id)+") and cTime>"+str(start)+" and cTime<"+str(end)
                 log.write(query)
