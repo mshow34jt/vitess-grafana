@@ -316,14 +316,14 @@ class Query(object):
             mycursor.execute(query)
             row=mycursor.fetchone()
             if row is not None :
-                nidlist=str(row[0]+node_offset)
-                compIds.append(row[0]+node+offset)
+                nidlist=str(int(row[0])+int(node_offset))
+                compIds.append(row[0]+node_offset)
                 while row is not None:
                     row=mycursor.fetchone()
                     if row is not None:
-                        nidlist=nidlist + ',' + str(row[0]+node_offset)
-                        compIds.append(row[0]+node_offset)
-#            log.write("nidlist: " + nidlist)
+                        nidlist=nidlist + ',' + str(int(row[0])+int(node_offset))
+                        compIds.append(int(row[0])+int(node_offset))
+            log.write("nidlist: " + nidlist)
             if str(params) :
                 compIds=[jobId] 
             #override start and end if it is a job
