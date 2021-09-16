@@ -317,7 +317,7 @@ class Query(object):
             row=mycursor.fetchone()
             if row is not None :
                 nidlist=str(int(row[0])+int(node_offset))
-                compIds.append(row[0]+node_offset)
+                compIds.append(int(row[0])+int(node_offset))
                 while row is not None:
                     row=mycursor.fetchone()
                     if row is not None:
