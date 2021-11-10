@@ -323,7 +323,7 @@ class Query(object):
                     if row is not None:
                         nidlist=nidlist + ',' + str(int(row[0])+int(node_offset))
                         compIds.append(int(row[0])+int(node_offset))
-            log.write("nidlist: " + nidlist)
+#            log.write("nidlist: " + nidlist)
             if str(params) :
                 compIds=[jobId] 
             #override start and end if it is a job
