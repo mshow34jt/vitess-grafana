@@ -330,6 +330,8 @@ class Query(object):
             query="select start,`end` from jobs where jobid="+str(jobId)
             mycursor.execute(query)
             row=mycursor.fetchone()
+            jobStart = None
+            jobEnd = None
             if row is not None :
                 jobStart=row[0]
                 jobEnd=row[1]        
