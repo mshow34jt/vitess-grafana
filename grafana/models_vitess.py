@@ -333,14 +333,14 @@ class Query(object):
             if row is not None :
                 jobStart=row[0]
                 jobEnd=row[1]        
-            log.write('start '+str(start))
-            log.write('end '+str(end))
-            log.write('jobstart '+str(jobStart))
-            log.write('job end '+str(jobEnd))
+#            log.write('start '+str(start))
+#            log.write('end '+str(end))
+#            log.write('jobstart '+str(jobStart))
+#            log.write('job end '+str(jobEnd))
             if jobEnd is None:
                 jobEnd=int(time.time())
 
-            log.write('job end '+str(jobEnd))
+#            log.write('job end '+str(jobEnd))
 #                compIds = np.unique(comps.tolist())
         else:
 #            src.select([ 'component_id' ],
