@@ -284,7 +284,7 @@ class Query(object):
         node_offset=settings.NODE_OFFSET
         
         
-        log.write("dbinfo: "+str(db_host))    
+#        log.write("dbinfo: "+str(db_host))    
 
         mydb = mysql.connector.connect(host="127.0.0.1",port=15306,database='ISC')
         mycursor = mydb.cursor()
@@ -356,6 +356,8 @@ class Query(object):
 #                       order_by = 'time_comp_job'
 #                   )
 #            comps = src.get_results(limit=maxDataPoints)
+            log.write("At last else") 
+            allnodes=1
             comps=[ int(1234) ]
             if not comps:
                 compIds = np.zeros(1)
