@@ -178,7 +178,8 @@ def query(request):
             if ('{' in compId or ',' in compId):
                 compId = parse_glob(compId)
             else:
-                compId = int(compId)
+                if compId != "all":
+                    compId = int(compId)
         else:
             compId = None
         res_list = []
