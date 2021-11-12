@@ -413,7 +413,7 @@ class Query(object):
                 if not str(params) :
 #                    query= "select "+str(metric)+",((Ctime DIV 60)*60) as minutex from "+str(metric_table)+" where CompId in (" + str(comp_id) + ") and cTime>"+str(start)+" and cTime<"+str(end) + " group by minutex"
                     if allnodes==0:
-                        query= "select "+str(metric)+",cTime from "+str(metric_table)+" where CompId in (" + str(comp_id) + ") and cTime>"+str(start)+" and cTime<"+str(end) + " group by cTime"
+                        query= "select "+str(metric)+",cTime from "+str(metric_table)+" where CompId in (" + str(comp_id) + ") and cTime>"+str(start)+" and cTime<"+str(end)
                     else:
                         query= "select "+str(metric)+",cTime from "+str(metric_table)+" where cTime>"+str(start)+" and cTime<"+str(end) + " group by cTime"
                 else:
