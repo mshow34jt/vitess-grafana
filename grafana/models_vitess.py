@@ -298,11 +298,11 @@ class Query(object):
             if type(compIds) != list:
                 if compIds == "all":
                     allnodes=1
-                log.write("all nodes selected")    
-            else:
-                allnodes=0
-                compIds = [ int(compIds) ]
-                log.write("wanting to change the compids"+str(compIds))
+                    log.write("all nodes selected")    
+                else:
+                    allnodes=0
+                    compIds = [ int(compIds) ]
+                    log.write("wanting to change the compids"+str(compIds))
             else:
                 log.write("compIds is a list")
                 allnodes=0
