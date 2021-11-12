@@ -420,7 +420,7 @@ class Query(object):
                     if allnodes==0:
                         query= "select "+str(params)+"("+str(metric)+"),cTime from "+str(metric_table)+" where CompId in (" + nidlist + ") and cTime>"+str(jobStart)+" and cTime<"+str(jobEnd) + " group by cTime"
                     else:
-                        query= "select "+str(params)+"("+str(metric)+"),cTime from "+str(metric_table)+" where cTime>"+str(jobStart)+" and cTime<"+str(jobEnd) + " group by cTime"
+                        query= "select "+str(params)+"("+str(metric)+"),cTime from "+str(metric_table)+" where cTime>"+str(start)+" and cTime<"+str(end) + " group by cTime"
                         #                    query= "select "+str(params)+"("+str(metric)+"),((Ctime DIV 60)*60) as minutex from "+str(metric_table)+" where CompId in (" + nidlist + ") and cTime>"+str(jobStart)+" and cTime<"+str(jobEnd) + " group by minutex"
                 #query= "select loadavg_latest,cTime from ovis_metrics where CompId=1234  and cTime>"+str(start)+" and cTime<"+str(end)
                 #query= "select loadavg_latest,cTime from ovis_metrics where Compid in ("+str(comp_id)+") and cTime>"+str(start)+" and cTime<"+str(end)
