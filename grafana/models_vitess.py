@@ -296,16 +296,18 @@ class Query(object):
         comps = []
         if compIds:
             if type(compIds) != list:
+                if compIds == "all":
+                    allnodes=1
+                log.write("all nodes selected")    
+            else:
+                allnodes=0
                 compIds = [ int(compIds) ]
                 log.write("wanting to change the compids"+str(compIds))
+            else:
+                log.write("compIds is a list")
+                allnodes=0
         elif jobId != 0:
-#            src.select([ 'component_id'],
-#                from_ = [ self.schemaName ],
-#                where = [ [ 'job_id', Sos.COND_EQ, jobId ] ],
-#                order_by = 'job_time_comp'
-#            )
-#            comps = src.get_results(limit=maxDataPoints)
-#            log.write('Comps'+str(comps))
+            allnodes=0
             log.write('this is a job')
             comps= [ int(1234) ]
             if not comps:
@@ -324,8 +326,8 @@ class Query(object):
                         nidlist=nidlist + ',' + str(int(row[0])+int(node_offset))
                         compIds.append(int(row[0])+int(node_offset))
 #            log.write("nidlist: " + nidlist)
-            if str(params) :
-                compIds=[jobId] 
+#            if str(params) :
+#                compIds=[jobId] 
             #override start and end if it is a job
             query="select start,`end` from jobs where jobid="+str(jobId)
             mycursor.execute(query)
@@ -404,15 +406,23 @@ class Query(object):
                     metricDivisor=row[1]
                     metricUnits=row[2]
                     metric_table=row[3]
-#		If no aggregation
+
+#       		If no aggregation
                 if not str(params) :
 #                    query= "select "+str(metric)+",((Ctime DIV 60)*60) as minutex from "+str(metric_table)+" where CompId in (" + str(comp_id) + ") and cTime>"+str(start)+" and cTime<"+str(end) + " group by minutex"
-                    query= "select "+str(metric)+",Ctime from "+str(metric_table)+" where CompId in (" + str(comp_id) + ") and cTime>"+str(start)+" and cTime<"+str(end) + " group by cTime"
+                    if allnodes==0:
+                        query= "select "+str(metric)+",Ctime from "+str(metric_table)+" where CompId in (" + str(comp_id) + ") and cTime>"+str(start)+" and cTime<"+str(end) + " group by cTime"
+                    else:
+                        query= "select "+str(metric)+",Ctime from "+str(metric_table)+" where cTime>"+str(start)+" and cTime<"+str(end) + " group by cTime"
                 else:
-                    query= "select "+str(params)+"("+str(metric)+"),Ctime from "+str(metric_table)+" where CompId in (" + nidlist + ") and cTime>"+str(jobStart)+" and cTime<"+str(jobEnd) + " group by cTime"
-#                    query= "select "+str(params)+"("+str(metric)+"),((Ctime DIV 60)*60) as minutex from "+str(metric_table)+" where CompId in (" + nidlist + ") and cTime>"+str(jobStart)+" and cTime<"+str(jobEnd) + " group by minutex"
+                    if allnodes==0:
+                        query= "select "+str(params)+"("+str(metric)+"),Ctime from "+str(metric_table)+" where CompId in (" + nidlist + ") and cTime>"+str(jobStart)+" and cTime<"+str(jobEnd) + " group by cTime"
+                    else:
+                        query= "select "+str(metric)+",Ctime from "+str(metric_table)+" where cTime>"+str(start)+" and cTime<"+str(end) + " group by cTime"
+                        #                    query= "select "+str(params)+"("+str(metric)+"),((Ctime DIV 60)*60) as minutex from "+str(metric_table)+" where CompId in (" + nidlist + ") and cTime>"+str(jobStart)+" and cTime<"+str(jobEnd) + " group by minutex"
                 #query= "select loadavg_latest,cTime from ovis_metrics where CompId=1234  and cTime>"+str(start)+" and cTime<"+str(end)
                 #query= "select loadavg_latest,cTime from ovis_metrics where Compid in ("+str(comp_id)+") and cTime>"+str(start)+" and cTime<"+str(end)
+                
                 log.write(query)
                 mycursor.execute(query) 
                 res=mycursor.fetchall()
