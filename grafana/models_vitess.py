@@ -297,6 +297,8 @@ class Query(object):
         if compIds:
             if type(compIds) != list:
                 if compIds == "all":
+                    #we dont want to iterate over the letters of all
+                    compIds = [0]
                     allnodes=1
                     log.write("all nodes selected")    
                 else:
@@ -308,12 +310,8 @@ class Query(object):
                 allnodes=0
         elif jobId != 0:
             allnodes=0
-            log.write('this is a job')
-            comps= [ int(1234) ]
-            if not comps:
-                compIds = np.zeros(1)
-            else:
-                compIds = comps
+            log.write("this is a job")
+            compIds = []
             query="select nid from job_hosts where jobid="+str(jobId)
             mycursor.execute(query)
             row=mycursor.fetchone()
@@ -347,15 +345,6 @@ class Query(object):
 #            log.write('job end '+str(jobEnd))
 #                compIds = np.unique(comps.tolist())
         else:
-#            src.select([ 'component_id' ],
-#                from_ = [ self.schemaName ],
-#                where = [
-#                           [ 'timestamp', Sos.COND_GE, start ],
-#                           [ 'timestamp', Sos.COND_LE, end ],
-#                       ],
-#                       order_by = 'time_comp_job'
-#                   )
-#            comps = src.get_results(limit=maxDataPoints)
             log.write("At last else") 
             allnodes=1
             comps=[ int(1234) ]
@@ -363,36 +352,14 @@ class Query(object):
                 compIds = np.zeros(1)
             else:
                 compIds = comps
+
+        #If it is a job and not aggregated, we will use nidlist and not iterate over compids
+        if str(params) :
+            if allnodes==0:
+                compIds=[jobId]
+
         for comp_id in compIds:
             for metric in metricNames:
-#                if comp_id != 0:
-                    #where_ = [
-                    #    [ 'component_id', Sos.COND_EQ, comp_id ]
-                    #]
-#                    where_ = []
-#                else:
-#                    where_ = []
-#                if jobId != 0:
-                    #self.index = "job_comp_time"
-                    #where_.append([ 'job_id', Sos.COND_EQ, int(jobId) ])
-                    
-#                else:
-#                    self.index = "time_comp"
-#                    where_.append([ 'timestamp', Sos.COND_GE, start ])
-#                    where_.append([ 'timestamp', Sos.COND_LE, end ])
-#           
-#     src.select([ metric, 'timestamp' ],
-#                           from_ = [ self.schemaName ],
-#                           where = where_,
-#                           order_by = self.index
-#                       )
-#                inp = None
-#                time_delta = end - start
-#                res = src.get_results(inputer=inp, limit=1000000)
-#                if res is None:
-#                    continue
-#                if res is None:
-#                    return None	
                 metricName=str(metric)
                 metricDivisor=1
                 metricUnits="none"
@@ -412,11 +379,15 @@ class Query(object):
 #       		If no aggregation
                 if not str(params) :
 #                    query= "select "+str(metric)+",((Ctime DIV 60)*60) as minutex from "+str(metric_table)+" where CompId in (" + str(comp_id) + ") and cTime>"+str(start)+" and cTime<"+str(end) + " group by minutex"
+                    log.write("new Message 1")
                     if allnodes==0:
-                        query= "select "+str(metric)+",cTime from "+str(metric_table)+" where CompId in (" + str(comp_id) + ") and cTime>"+str(start)+" and cTime<"+str(end) + " group by cTime"
+                        if jobId == 0 :
+                            comp_id=int(comp_id)+int(node_offset)
+                        query= "select "+str(metric)+",cTime from "+str(metric_table)+" where CompId in (" + str(comp_id) + ") and cTime>"+str(start)+" and cTime<"+str(end) 
                     else:
                         query= "select "+str(metric)+",cTime from "+str(metric_table)+" where cTime>"+str(start)+" and cTime<"+str(end)
                 else:
+                    log.write("new Message 2")
                     if allnodes==0:
                         query= "select "+str(params)+"("+str(metric)+"),cTime from "+str(metric_table)+" where CompId in (" + nidlist + ") and cTime>"+str(jobStart)+" and cTime<"+str(jobEnd) + " group by cTime"
                     else:
