@@ -24,7 +24,8 @@ export class SosDatasourceQueryCtrl extends QueryCtrl {
         this.target.analysis = this.target.analysis;
         this.target.format = this.target.format || 'time_series';
         this.target.extra_params = this.target.extra_params;
-
+        this.target.filters = this.target.filters;
+	    
         this.panelCtrl.events.on('data-received', this.onDataReceived.bind(this), $scope);
         this.panelCtrl.events.on('data-error', this.onDataError.bind(this), $scope);
     }
