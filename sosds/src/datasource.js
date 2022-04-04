@@ -116,6 +116,7 @@ export class SosDatasource {
 		format: this.templateSrv.replace(target.format),
                 analysis: this.templateSrv.replace(target.analysis),
                 extra_params: this.templateSrv.replace(target.extra_params),
+		filters: this.templateSrv.replace(target.filters),
 		refId: target.refId,
 		hide: target.hide,
 		type: target.type || 'timeserie'
