@@ -109,7 +109,16 @@
                                                ng-blur="ctrl.onChangeInternal()">
       </input>
     </div>
-
+    <div class="gf-form max-width-20">
+      <label class="gf-form-label query-keyword width-9">
+        Filters
+      </label>
+      <input type="text" class="gf-form-input" spellcheck="false" ng-model="ctrl.target.filters"
+                                               placeholder="filters"
+                                               data-min-length=0 data-items=100
+                                               ng-blur="ctrl.onChangeInternal()">
+      </input>
+    </div>
 <!-- end metric params -->
 
 
