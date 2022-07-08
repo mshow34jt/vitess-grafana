@@ -273,7 +273,7 @@ class Query(object):
             return None
 
     def getCompTimeseries(self, compIds, metricNames,
-                          start, end, intervalMs, maxDataPoints, params, jobId=0):
+                          start, end, intervalMs, maxDataPoints, params,filters,jobId=0):
         """Return time series data for a particular component/s"""
         src = SosDataSource()
         src.config(cont=self.cont)
@@ -292,6 +292,10 @@ class Query(object):
 
 #        log.write("initial compids "+str(compIds))
 #        log.write("params "+str(params))
+        log.write("filters: "+str(filters))
+        if filters:
+          filters = "and "+filters
+          log.write("filters: "+str(filters))
         result = []
         comps = []
         if compIds:
@@ -304,7 +308,7 @@ class Query(object):
                 else:
                     allnodes=0
                     compIds = [ int(compIds) ]
-                    log.write("wanting to change the compids"+str(compIds))
+                    log.write("wanting to change the compids "+str(compIds))
             else:
                 log.write("compIds is a list")
                 allnodes=0
@@ -356,9 +360,11 @@ class Query(object):
         #If it is a job and not aggregated, we will use nidlist and not iterate over compids
         if str(params) :
             if allnodes==0:
-                compIds=[jobId]
+                if jobId!=0:
+                  compIds=[jobId]
 
         for comp_id in compIds:
+            log.write("comp_id " + str(comp_id) + str(compIds))
             for metric in metricNames:
                 metricName=str(metric)
                 metricDivisor=1
@@ -379,21 +385,25 @@ class Query(object):
 #       		If no aggregation
                 if not str(params) :
 #                    query= "select "+str(metric)+",((Ctime DIV 60)*60) as minutex from "+str(metric_table)+" where CompId in (" + str(comp_id) + ") and cTime>"+str(start)+" and cTime<"+str(end) + " group by minutex"
-                    log.write("new Message 1")
+                    log.write("params set")
                     if allnodes==0:
                         if jobId == 0 :
                             comp_id=int(comp_id)+int(node_offset)
-                        query= "select "+str(metric)+",cTime from "+str(metric_table)+" where CompId in (" + str(comp_id) + ") and cTime>"+str(start)+" and cTime<"+str(end) 
+                        query= "select "+str(metric)+",cTime from "+str(metric_table)+" where CompId in (" + str(comp_id) + ") and cTime>"+str(start)+" and cTime<"+str(end)+" "+filters 
                     else:
-                        query= "select "+str(metric)+",cTime from "+str(metric_table)+" where cTime>"+str(start)+" and cTime<"+str(end)
+                        query= "select "+str(metric)+",cTime from "+str(metric_table)+" where cTime>"+str(start)+" and cTime<"+str(end)+" "+filters
+
                 else:
-                    log.write("new Message 2")
+                    log.write("no params")
                     if allnodes==0:
-                        query= "select "+str(params)+"("+str(metric)+"),cTime from "+str(metric_table)+" where CompId in (" + nidlist + ") and cTime>"+str(jobStart)+" and cTime<"+str(jobEnd) + " group by cTime"
+                        if jobId == 0:
+                           nidlist = str(int(comp_id)+int(node_offset))
+                           jobStart = str(int(start))
+                           jobEnd = str(end)
+                        query= "select "+str(params)+"("+str(metric)+"),cTime from "+str(metric_table)+" where CompId in (" + nidlist + ") and cTime>"+str(jobStart)+" and cTime<"+str(jobEnd) + " "+filters + " group by cTime"
                     else:
-                        query= "select "+str(params)+"("+str(metric)+"),cTime from "+str(metric_table)+" where cTime>"+str(start)+" and cTime<"+str(end) + " group by cTime"
+                        query= "select "+str(params)+"("+str(metric)+"),cTime from "+str(metric_table)+" where cTime>"+str(start)+" and cTime<"+str(end) +" "+filters + " group by cTime"
                         #                    query= "select "+str(params)+"("+str(metric)+"),((Ctime DIV 60)*60) as minutex from "+str(metric_table)+" where CompId in (" + nidlist + ") and cTime>"+str(jobStart)+" and cTime<"+str(jobEnd) + " group by minutex"
-                #query= "select loadavg_latest,cTime from ovis_metrics where CompId=1234  and cTime>"+str(start)+" and cTime<"+str(end)
                 #query= "select loadavg_latest,cTime from ovis_metrics where Compid in ("+str(comp_id)+") and cTime>"+str(start)+" and cTime<"+str(end)
                 
                 log.write(query)

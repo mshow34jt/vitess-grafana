@@ -148,6 +148,9 @@ def query(request):
         #    return HttpResponse("The container {0} could not be opened.".\
         #                        format(cont_name),
         #                        content_type="text/html")
+#        log.write("in query\n")
+        filters = str(target['filters']) 
+        log.write("Filter: "+filters+"\n")
         schemaName = str(target['schema'])
         metricNames = parse_glob(target['target'])
         if 'scopedVars' in req:
@@ -251,7 +254,7 @@ def query(request):
                                                  metricNames,
                                                  int(startS), int(endS),
                                                  intervalMs,
-                                                 maxDataPoints, params, jobId)
+                                                 maxDataPoints, params, filters, jobId)
                 if result:
                     for res in result:
                         res_list.append({ 'target' : '[' + str(res['comp_id']) + ']'
