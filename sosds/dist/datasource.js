@@ -162,6 +162,7 @@ System.register(["lodash"], function (_export, _context) {
 								format: _this.templateSrv.replace(target.format),
 								analysis: _this.templateSrv.replace(target.analysis),
 								extra_params: _this.templateSrv.replace(target.extra_params),
+								filters: _this.templateSrv.replace(target.filters),
 								refId: target.refId,
 								hide: target.hide,
 								type: target.type || 'timeserie'

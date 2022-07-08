@@ -85,6 +85,7 @@ System.register(['app/plugins/sdk', './css/query-editor.css!'], function (_expor
                _this.target.analysis = _this.target.analysis;
                _this.target.format = _this.target.format || 'time_series';
                _this.target.extra_params = _this.target.extra_params;
+               _this.target.filters = _this.target.filters;
 
                _this.panelCtrl.events.on('data-received', _this.onDataReceived.bind(_this), $scope);
                _this.panelCtrl.events.on('data-error', _this.onDataError.bind(_this), $scope);
